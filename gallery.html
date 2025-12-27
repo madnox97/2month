@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Gallery - this one is for my ponne</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	background: #ffffff;
+	overflow-x: hidden;
+	font-family: 'Arial', sans-serif;
+}
+
+.gallery-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	background: #ffffff;
+}
+
+.gallery-image {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	display: block;
+}
+
+.back-button {
+	position: fixed;
+	top: 20px;
+	left: 20px;
+	z-index: 1000;
+	background: rgba(255, 255, 255, 0.9);
+	border: 2px solid #ff6b9d;
+	color: #ff6b9d;
+	padding: 12px 24px;
+	border-radius: 25px;
+	text-decoration: none;
+	font-size: 16px;
+	font-weight: 600;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+	background: #ff6b9d;
+	color: white;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+}
+
+/* Music Play Button */
+#musicPlayButton {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 1000;
+	background: rgba(255, 107, 157, 0.9);
+	border: none;
+	color: white;
+	padding: 15px 20px;
+	border-radius: 50%;
+	font-size: 20px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+	display: none;
+}
+
+#musicPlayButton:hover {
+	background: rgba(255, 107, 157, 1);
+	transform: scale(1.1);
+	box-shadow: 0 6px 16px rgba(255, 107, 157, 0.4);
+}
+
+#musicPlayButton.show {
+	display: block;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.gallery-image {
+		object-fit: cover;
+	}
+}
+</style>
+</head>
+<body>
+	<audio id="backgroundMusic" loop preload="auto">
+		<source src="../music.mp3" type="audio/mpeg">
+		<source src="../music.ogg" type="audio/ogg">
+		Your browser does not support the audio element.
+	</audio>
+	
+	<button id="musicPlayButton" title="Click to play music">♪</button>
+	
+	<a href="index.html" class="back-button">← Back to Love</a>
+	
+	<div class="gallery-container">
+		<img src="image.png" alt="Love Memory" class="gallery-image" id="galleryImage">
+	</div>
+	
+	<script type="text/javascript">
+	// Play background music - continue from previous page
+	var audio = document.getElementById("backgroundMusic");
+	var musicPlayed = false;
+	
+	// Get saved playback state
+	var savedPosition = sessionStorage.getItem('musicPosition');
+	var shouldPlayMusic = sessionStorage.getItem('musicPlaying') === 'true';
+	
+	if (audio) {
+		audio.volume = 0.5; // Set volume to 50%
+		audio.preload = "auto";
+		
+		// Function to try different audio paths
+		function tryAudioPath(paths, index) {
+			if (index >= paths.length) {
+				console.error("All audio paths failed");
+				return;
+			}
+			
+			var currentPath = paths[index];
+			console.log("Trying audio path:", currentPath);
+			
+			// Create new audio source
+			var source = document.createElement('source');
+			source.src = currentPath;
+			source.type = 'audio/mpeg';
+			
+			// Clear existing sources and add new one
+			audio.innerHTML = '';
+			audio.appendChild(source);
+			audio.load();
+		}
+		
+		// Add error handling
+		audio.addEventListener('error', function(e) {
+			console.error("Audio error:", audio.error);
+			if (audio.error) {
+				console.error("Error code:", audio.error.code, "Message:", audio.error.message);
+				// Try alternative paths
+				var paths = ["../music.mp3", "music.mp3", "./music.mp3"];
+				var currentSrc = audio.currentSrc || audio.src;
+				var currentIndex = paths.indexOf(currentSrc.split('/').pop()) + 1;
+				if (currentIndex === 0) currentIndex = 1;
+				tryAudioPath(paths, currentIndex);
+			}
+		});
+		
+		// Try to play music (may require user interaction on some browsers)
+		function playMusic() {
+			if (audio && !musicPlayed) {
+				if (audio.readyState >= 2) {
+					var promise = audio.play();
+					if (promise !== undefined) {
+						promise.then(function() {
+							console.log("Music started playing successfully");
+							musicPlayed = true;
+							sessionStorage.setItem('musicPlaying', 'true');
+							$("#musicPlayButton").removeClass("show");
+						}).catch(function(error) {
+							console.log("Autoplay prevented. User interaction required:", error);
+							// Show play button if autoplay fails
+							$("#musicPlayButton").addClass("show");
+							// Don't set musicPlayed to true so we can try again on user interaction
+						});
+					} else {
+						// Older browsers
+						audio.play();
+						musicPlayed = true;
+						sessionStorage.setItem('musicPlaying', 'true');
+					}
+				} else {
+					console.log("Audio not ready yet. ReadyState:", audio.readyState);
+					// Try again after a short delay
+					setTimeout(playMusic, 500);
+				}
+			}
+		}
+		
+		// Restore playback position when metadata is loaded
+		if (savedPosition && shouldPlayMusic) {
+			audio.addEventListener('loadedmetadata', function() {
+				var position = parseFloat(savedPosition);
+				if (!isNaN(position) && position > 0) {
+					audio.currentTime = position;
+					console.log("Restored playback position:", position);
+				}
+			}, { once: true });
+		}
+		
+		// Wait for audio to be ready, then try to play
+		audio.addEventListener('canplay', function() {
+			console.log("Audio can play");
+			// Restore position if not already set
+			if (savedPosition && shouldPlayMusic && audio.currentTime === 0) {
+				var position = parseFloat(savedPosition);
+				if (!isNaN(position) && position > 0) {
+					audio.currentTime = position;
+				}
+			}
+			if (shouldPlayMusic) {
+				setTimeout(playMusic, 100);
+			} else {
+				setTimeout(playMusic, 300);
+			}
+		});
+		
+		audio.addEventListener('canplaythrough', function() {
+			console.log("Audio can play through");
+			// Restore position if not already set
+			if (savedPosition && shouldPlayMusic && audio.currentTime === 0) {
+				var position = parseFloat(savedPosition);
+				if (!isNaN(position) && position > 0) {
+					audio.currentTime = position;
+				}
+			}
+			if (shouldPlayMusic) {
+				setTimeout(playMusic, 100);
+			} else {
+				setTimeout(playMusic, 300);
+			}
+		});
+		
+		audio.addEventListener('loadeddata', function() {
+			console.log("Audio data loaded");
+			if (shouldPlayMusic) {
+				setTimeout(playMusic, 100);
+			} else {
+				setTimeout(playMusic, 300);
+			}
+		});
+		
+		audio.addEventListener('loadedmetadata', function() {
+			console.log("Audio metadata loaded");
+			if (shouldPlayMusic) {
+				setTimeout(playMusic, 200);
+			} else {
+				setTimeout(playMusic, 500);
+			}
+		});
+		
+		// Try to play on any user interaction
+		$(document).on('click touchstart keydown mousemove', function(e) {
+			if (!$(e.target).closest('.back-button').length && !$(e.target).is('.back-button')) {
+				if (!musicPlayed) {
+					playMusic();
+				}
+			}
+		});
+		
+		// Try to play after page loads
+		$(window).on('load', function() {
+			if (shouldPlayMusic) {
+				setTimeout(playMusic, 500);
+			} else {
+				setTimeout(playMusic, 1000);
+			}
+		});
+		
+		// Also try immediately after DOM is ready
+		if (shouldPlayMusic) {
+			setTimeout(playMusic, 500);
+		} else {
+			setTimeout(playMusic, 2000);
+		}
+		
+		// Try again after a longer delay
+		setTimeout(function() {
+			if (!musicPlayed) {
+				console.log("Retrying audio playback...");
+				playMusic();
+				// Show play button if still not playing
+				if (!musicPlayed) {
+					$("#musicPlayButton").addClass("show");
+				}
+			}
+		}, 5000);
+		
+		// Play button click handler
+		$("#musicPlayButton").on("click", function() {
+			playMusic();
+			$(this).removeClass("show");
+		});
+		
+		// Save playback position periodically while playing
+		var savePositionInterval = setInterval(function() {
+			if (audio && !audio.paused && musicPlayed) {
+				sessionStorage.setItem('musicPosition', audio.currentTime.toString());
+				sessionStorage.setItem('musicPlaying', 'true');
+			}
+		}, 1000); // Save every second
+		
+		// Store music state and position when navigating away
+		window.addEventListener('beforeunload', function() {
+			if (audio) {
+				if (musicPlayed && !audio.paused) {
+					sessionStorage.setItem('musicPlaying', 'true');
+					sessionStorage.setItem('musicPosition', audio.currentTime.toString());
+				} else {
+					sessionStorage.setItem('musicPlaying', 'false');
+					sessionStorage.removeItem('musicPosition');
+				}
+			}
+		});
+		
+		// Get saved playback position
+		var savedPosition = sessionStorage.getItem('musicPosition');
+		
+		// Restore playback position when metadata is loaded
+		if (savedPosition && shouldPlayMusic) {
+			audio.addEventListener('loadedmetadata', function() {
+				var position = parseFloat(savedPosition);
+				if (!isNaN(position) && position > 0) {
+					audio.currentTime = position;
+					console.log("Restored playback position:", position);
+				}
+			}, { once: true });
+		}
+	}
+	</script>
+</body>
+</html>
+

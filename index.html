@@ -1,0 +1,463 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script src="https://kit.fontawesome.com/a14ae32021.js" crossorigin="anonymous"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>this one is for my ponne</title>
+
+<style type="text/css">
+@font-face {
+	font-family: digit;
+	src: url('digital-7_mono.ttf') format("truetype");
+}
+
+/* Image Modal Styles */
+#imageModal {
+	display: none;
+	position: fixed;
+	z-index: 9999;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.9);
+	animation: fadeIn 0.3s;
+}
+
+#imageModal.show {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#modalImage {
+	margin: auto;
+	display: block;
+	max-width: 90%;
+	max-height: 90%;
+	object-fit: contain;
+	animation: zoomIn 0.3s;
+}
+
+#closeModal {
+	position: absolute;
+	top: 15px;
+	right: 35px;
+	color: #f1f1f1;
+	font-size: 40px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+#closeModal:hover {
+	color: #ff6b9d;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+	from { transform: scale(0.8); opacity: 0; }
+	to { transform: scale(1); opacity: 1; }
+}
+
+/* Heart Link Styles */
+#heartLink {
+	cursor: pointer;
+	display: inline-block;
+	transition: transform 0.3s ease;
+	text-decoration: none;
+}
+
+#heartLink:hover {
+	transform: scale(1.2);
+}
+
+#heartLink:active {
+	transform: scale(0.9);
+}
+
+#heartspan {
+	display: block;
+	text-align: center;
+	margin: 20px 0;
+}
+
+#icon {
+	pointer-events: auto;
+	cursor: pointer;
+}
+
+/* Music Play Button */
+#musicPlayButton {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 1000;
+	background: rgba(255, 107, 157, 0.9);
+	border: none;
+	color: white;
+	padding: 15px 20px;
+	border-radius: 50%;
+	font-size: 20px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+	display: none;
+}
+
+#musicPlayButton:hover {
+	background: rgba(255, 107, 157, 1);
+	transform: scale(1.1);
+	box-shadow: 0 6px 16px rgba(255, 107, 157, 0.4);
+}
+
+#musicPlayButton.show {
+	display: block;
+}
+</style>
+<link href="css/default.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/garden.js"></script>
+<script type="text/javascript" src="js/functions.js"></script>
+
+</head>
+
+<body>
+
+<audio id="backgroundMusic" loop preload="auto">
+	<source src="../music.mp3" type="audio/mpeg">
+	<source src="../music.ogg" type="audio/ogg">
+	Your browser does not support the audio element.
+</audio>
+
+<button id="musicPlayButton" title="Click to play music">♪</button>
+
+<div id="mainDiv">
+	<div id="content">
+		<div id="code">
+			<span class="comments">/**</span><br />
+			<span class="space"/><span class="comments">*THE CODE OF LOVE</span><br />
+			<span class="space"/><span class="comments">*/</span><br />
+			Hey Girl!
+Do you remember the day everything changed for us?
+<span class="comments">// March 4 — the first time we met.</span>
+
+From that moment on, something beautiful started growing inside me.
+<span class="comments">// Your smile, your voice, your messages… everything.</span>
+<br><br>
+Slowly, every little thing about you found a place in my heart.
+
+As the days passed,
+our bond kept getting deeper and stronger.
+What began as a small spark turned into a love that’s real, pure, and steady.
+<br><br>
+We’ve walked through good moments, crazy laughs,
+Small fights, little misunderstandings —
+<span class="comments">// And there may be more, that’s just how love grows.</span>
+But every time,
+We come back stronger,
+Closer than before,
+just like how Prabhas keeps giving one good movie after another…
+(please don’t scold me for the example, but you get the point 😭❤️)
+<br><br>
+
+Today marks Two month of “us,”
+Two month of choosing each other,
+Two month of feeling lucky because of you.
+
+Ponne…
+I have no idea where life will take us,
+But I know one thing for sure —
+I’ll keep loving you,
+In every version of tomorrow.
+
+<br><br>
+			Now If you miss me you can touch the heart below<br />
+			<br>
+			<span id="heartspan">
+			<a href="gallery.html" id="heartLink"><i class="fas fa-heart" id="icon"></i></a>
+			</span>
+		</div>
+		<div id="loveHeart">
+			<canvas id="garden"></canvas>
+			<div id="words">
+				<div id="messages">
+					FOREVER പൊണ്ണെ
+					<div id="elapseClock"></div>
+				</div>
+				<div id="loveu">
+					I LOVE YOU SOOO MUCH<br/>
+					<div class="signature">- Erripu</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal">
+	<span id="closeModal">&times;</span>
+	<img id="modalImage" src="image.jpg" alt="Love Photo">
+</div>
+
+<script type="text/javascript">
+var offsetX = $("#loveHeart").width() / 2;
+var offsetY = $("#loveHeart").height() / 2 - 55;
+var together = new Date();
+together.setFullYear(2025, 9, 27);
+together.setHours(14);
+together.setMinutes(45);
+together.setSeconds(0);
+together.setMilliseconds(0);
+
+if (!document.createElement('canvas').getContext) {
+	var msg = document.createElement("div");
+	msg.id = "errorMsg";
+	msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+"; 
+	document.body.appendChild(msg);
+	$("#code").css("display", "none")
+	$("#copyright").css("position", "absolute");
+	$("#copyright").css("bottom", "10px");
+	document.execCommand("stop");
+} else {
+	setTimeout(function () {
+		startHeartAnimation();
+	}, 5000);
+
+	timeElapse(together);
+	setInterval(function () {
+		timeElapse(together);
+	}, 500);
+
+	adjustCodePosition();
+	$("#code").typewriter();
+	
+	// Play background music
+	var audio = document.getElementById("backgroundMusic");
+	var musicPlayed = false;
+	
+	// Get saved playback state
+	var savedPosition = sessionStorage.getItem('musicPosition');
+	var shouldPlayMusic = sessionStorage.getItem('musicPlaying') === 'true';
+	
+	if (audio) {
+		audio.volume = 0.5; // Set volume to 50%
+		audio.preload = "auto";
+		
+		// Function to try different audio paths
+		function tryAudioPath(paths, index) {
+			if (index >= paths.length) {
+				console.error("All audio paths failed");
+				return;
+			}
+			
+			var currentPath = paths[index];
+			console.log("Trying audio path:", currentPath);
+			
+			// Create new audio source
+			var source = document.createElement('source');
+			source.src = currentPath;
+			source.type = 'audio/mpeg';
+			
+			// Clear existing sources and add new one
+			audio.innerHTML = '';
+			audio.appendChild(source);
+			audio.load();
+		}
+		
+		// Add error handling
+		audio.addEventListener('error', function(e) {
+			console.error("Audio error:", audio.error);
+			if (audio.error) {
+				console.error("Error code:", audio.error.code, "Message:", audio.error.message);
+				// Try alternative paths
+				var paths = ["../music.mp3", "music.mp3", "./music.mp3"];
+				var currentSrc = audio.currentSrc || audio.src;
+				var currentIndex = paths.indexOf(currentSrc.split('/').pop()) + 1;
+				if (currentIndex === 0) currentIndex = 1;
+				tryAudioPath(paths, currentIndex);
+			}
+		});
+		
+		// Try to play music (may require user interaction on some browsers)
+		function playMusic() {
+			if (audio && !musicPlayed) {
+				if (audio.readyState >= 2) {
+					var promise = audio.play();
+					if (promise !== undefined) {
+						promise.then(function() {
+							console.log("Music started playing successfully");
+							musicPlayed = true;
+							sessionStorage.setItem('musicPlaying', 'true');
+							$("#musicPlayButton").removeClass("show");
+						}).catch(function(error) {
+							console.log("Autoplay prevented. User interaction required:", error);
+							// Show play button if autoplay fails
+							$("#musicPlayButton").addClass("show");
+							// Don't set musicPlayed to true so we can try again on user interaction
+						});
+					} else {
+						// Older browsers
+						audio.play();
+						musicPlayed = true;
+						sessionStorage.setItem('musicPlaying', 'true');
+					}
+				} else {
+					console.log("Audio not ready yet. ReadyState:", audio.readyState);
+					// Try again after a short delay
+					setTimeout(playMusic, 500);
+				}
+			}
+		}
+		
+		// Restore playback position when metadata is loaded
+		if (savedPosition && shouldPlayMusic) {
+			audio.addEventListener('loadedmetadata', function() {
+				var position = parseFloat(savedPosition);
+				if (!isNaN(position) && position > 0) {
+					audio.currentTime = position;
+					console.log("Restored playback position:", position);
+				}
+			}, { once: true });
+		}
+		
+		// Wait for audio to be ready, then try to play
+		audio.addEventListener('canplay', function() {
+			console.log("Audio can play");
+			// Restore position if not already set
+			if (savedPosition && shouldPlayMusic && audio.currentTime === 0) {
+				var position = parseFloat(savedPosition);
+				if (!isNaN(position) && position > 0) {
+					audio.currentTime = position;
+				}
+			}
+			setTimeout(playMusic, 300);
+		});
+		
+		audio.addEventListener('canplaythrough', function() {
+			console.log("Audio can play through");
+			// Restore position if not already set
+			if (savedPosition && shouldPlayMusic && audio.currentTime === 0) {
+				var position = parseFloat(savedPosition);
+				if (!isNaN(position) && position > 0) {
+					audio.currentTime = position;
+				}
+			}
+			setTimeout(playMusic, 300);
+		});
+		
+		audio.addEventListener('loadeddata', function() {
+			console.log("Audio data loaded");
+			setTimeout(playMusic, 300);
+		});
+		
+		audio.addEventListener('loadedmetadata', function() {
+			console.log("Audio metadata loaded");
+			setTimeout(playMusic, 500);
+		});
+		
+		// Try to play on any user interaction (more aggressive)
+		// Exclude heartLink clicks to avoid conflicts
+		$(document).on('click touchstart keydown mousemove', function(e) {
+			// Don't interfere with heart link clicks
+			if (!$(e.target).closest('#heartLink').length && !$(e.target).is('#heartLink')) {
+				if (!musicPlayed) {
+					playMusic();
+				}
+			}
+		});
+		
+		// Try to play after page loads
+		$(window).on('load', function() {
+			setTimeout(playMusic, 1000);
+		});
+		
+		// Also try immediately after DOM is ready
+		setTimeout(playMusic, 2000);
+		
+		// Try again after a longer delay
+		setTimeout(function() {
+			if (!musicPlayed) {
+				console.log("Retrying audio playback...");
+				playMusic();
+				// Show play button if still not playing
+				if (!musicPlayed) {
+					$("#musicPlayButton").addClass("show");
+				}
+			}
+		}, 5000);
+		
+		// Play button click handler
+		$("#musicPlayButton").on("click", function() {
+			playMusic();
+			$(this).removeClass("show");
+		});
+		
+		// Save playback position periodically while playing
+		var savePositionInterval = setInterval(function() {
+			if (audio && !audio.paused && musicPlayed) {
+				sessionStorage.setItem('musicPosition', audio.currentTime.toString());
+				sessionStorage.setItem('musicPlaying', 'true');
+			}
+		}, 1000); // Save every second
+		
+		// Store music state and position when navigating away
+		window.addEventListener('beforeunload', function() {
+			if (audio) {
+				if (musicPlayed && !audio.paused) {
+					sessionStorage.setItem('musicPlaying', 'true');
+					sessionStorage.setItem('musicPosition', audio.currentTime.toString());
+				} else {
+					sessionStorage.setItem('musicPlaying', 'false');
+					sessionStorage.removeItem('musicPosition');
+				}
+			}
+		});
+		
+		// Restore playback position if available
+		var savedPosition = sessionStorage.getItem('musicPosition');
+		if (savedPosition && shouldPlayMusic) {
+			audio.addEventListener('loadedmetadata', function() {
+				audio.currentTime = parseFloat(savedPosition);
+			}, { once: true });
+			
+			audio.addEventListener('canplay', function() {
+				if (audio.readyState >= 2) {
+					audio.currentTime = parseFloat(savedPosition);
+				}
+			}, { once: true });
+		}
+	}
+	
+	// Heart link now navigates to gallery page
+	// No need for modal functionality anymore
+	
+	$("#closeModal").on("click", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$("#imageModal").removeClass("show");
+		return false;
+	});
+	
+	// Close modal when clicking outside the image
+	$("#imageModal").on("click", function(e) {
+		if (e.target.id === "imageModal") {
+			$("#imageModal").removeClass("show");
+		}
+	});
+	
+	// Close modal with Escape key
+	$(document).on("keydown", function(e) {
+		if (e.key === "Escape" || e.keyCode === 27) {
+			$("#imageModal").removeClass("show");
+		}
+	});
+}
+</script>
+</body>
+</html>
