@@ -277,7 +277,7 @@ if (!document.createElement('canvas').getContext) {
 			if (audio.error) {
 				console.error("Error code:", audio.error.code, "Message:", audio.error.message);
 				// Try alternative paths
-				var paths = ["../music.mp3", "music.mp3", "./music.mp3"];
+				var paths = ["music.mp3", "./music.mp3"];
 				var currentSrc = audio.currentSrc || audio.src;
 				var currentIndex = paths.indexOf(currentSrc.split('/').pop()) + 1;
 				if (currentIndex === 0) currentIndex = 1;
